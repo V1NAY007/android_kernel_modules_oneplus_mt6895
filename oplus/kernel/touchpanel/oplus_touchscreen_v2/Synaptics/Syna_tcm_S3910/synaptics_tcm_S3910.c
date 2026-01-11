@@ -7280,21 +7280,8 @@ static int syna_spi_suspend(struct device *dev)
 {
 #ifndef CONFIG_ARCH_QTI_VM
 	struct touchpanel_data *ts = dev_get_drvdata(dev);
-	struct syna_tcm_data *tcm_info = NULL;
 
 	TPD_INFO("%s: is called\n", __func__);
-
-	if (ts && ts->chip_data) {
-		tcm_info = (struct syna_tcm_data *)ts->chip_data;
-
-		/* Force-enable gesture(DT2W) before suspend*/
-		TPD_INFO("DT2W: enabling gesture mode before suspend\n");
-
-		syna_tcm_set_gesture_mode(tcm_info, 1);
-		syna_set_gesture_state(tcm_info, 1);
-	}
-
-	/* Continue normal suspend (this will keep IC in gesture LP mode)*/
 	tp_pm_suspend(ts);
 #endif
 	return 0;
