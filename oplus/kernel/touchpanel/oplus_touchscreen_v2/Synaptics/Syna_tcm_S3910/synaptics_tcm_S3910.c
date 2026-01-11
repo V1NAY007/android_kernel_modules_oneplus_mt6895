@@ -8,6 +8,9 @@
 #include <linux/interrupt.h>
 #include "synaptics_tcm_S3910.h"
 
+#include <linux/pm_wakeup.h>
+#include <linux/input.h>
+
 #ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
 #include <linux/platform_data/spi-mt65xx.h>
 #endif
@@ -2695,12 +2698,31 @@ static int syna_get_vendor(void *chip_data, struct panel_info *panel_data)
 static u32 syna_trigger_reason(void *chip_data, int gesture_enable,
 			       int is_suspended)
 {
-	struct syna_tcm_data *tcm_info = (struct syna_tcm_data *)chip_data;
+	struct syna_tcm_data *tcm_info = chip_data;
+	u32 reason = 0;
 
+	if (!tcm_info)
+		return 0;
+
+
+	/* Clear previous reason */
 	tcm_info->trigger_reason = 0;
+
+	/* Read message from touch IC */
 	syna_tcm_read_message(tcm_info, NULL, 0);
 
-	return tcm_info->trigger_reason;
+	reason = tcm_info->trigger_reason;
+
+	/*  FORCE WAKE ON DOUBLE TAP */
+	if (is_suspended && gesture_enable && reason == DOU_TAP) {
+		
+		TPD_INFO("DT2W: double tap detected in trigger_reason, waking device\n");
+
+		pm_wakeup_event(&tcm_info->ts->client->dev, 0);
+
+	}	
+
+	return reason;
 }
 
 static int syna_get_touch_points(void *chip_data, struct point_info *points,
