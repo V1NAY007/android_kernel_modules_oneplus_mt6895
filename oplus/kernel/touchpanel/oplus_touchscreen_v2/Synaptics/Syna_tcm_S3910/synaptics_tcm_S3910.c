@@ -7149,6 +7149,21 @@ static int syna_tcm_probe(struct spi_device *spi)
 		goto err_malloc_register;
 	}
 
+	/* Enable touchpanel as wakeup source (DT2W) */
+	device_init_wakeup(&spi->dev, true);
+
+	if (ts->irq > 0) {
+    	retval = enable_irq_wake(ts->irq);
+    	if (retval) {
+        	TPD_ERR("Failed to enable irq wake, irq=%d, ret=%d\n",
+                	ts->irq, retval);
+    	} else {
+        	TPD_INFO("Touch IRQ wake enabled, irq=%d\n", ts->irq);
+    	}
+	} else {
+    	TPD_ERR("Invalid IRQ, cannot enable wakeup\n");
+	}
+
 	tcm_info->monitor_data = &ts->monitor_data;
 	tcm_info->tp_index = ts->tp_index;
 	init_chip_dts(ts->dev, tcm_info);
