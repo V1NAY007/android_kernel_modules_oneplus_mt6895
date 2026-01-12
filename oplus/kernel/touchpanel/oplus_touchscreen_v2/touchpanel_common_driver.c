@@ -694,6 +694,9 @@ static void tp_gesture_handle(struct touchpanel_data *ts)
 		}
 	}
 
+	/*  DEBUG: confirm promotion result */
+	TP_INFO(ts->tp_index, "AFTER PROMOTE: gesture_type=%d (SINGLE=%d DOU_TAP=%d)\n", gesture_info_temp.gesture_type, SINGLE_TAP, DOU_TAP);
+
 	TP_INFO(ts->tp_index, "detect %s gesture\n",
 		gesture_info_temp.gesture_type == DOU_TAP ? "double tap" :
 		gesture_info_temp.gesture_type == UP_VEE ? "up vee" :
