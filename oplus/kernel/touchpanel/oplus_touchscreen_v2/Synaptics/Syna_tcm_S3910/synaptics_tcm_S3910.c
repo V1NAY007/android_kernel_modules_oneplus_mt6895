@@ -7155,13 +7155,13 @@ static int syna_tcm_probe(struct spi_device *spi)
 	if (ts->irq > 0) {
     	retval = enable_irq_wake(ts->irq);
     	if (retval) {
-        	TPD_ERR("Failed to enable irq wake, irq=%d, ret=%d\n",
+        	TPD_INFO("Failed to enable irq wake, irq=%d, ret=%d\n",
                 	ts->irq, retval);
     	} else {
         	TPD_INFO("Touch IRQ wake enabled, irq=%d\n", ts->irq);
     	}
 	} else {
-    	TPD_ERR("Invalid IRQ, cannot enable wakeup\n");
+    	TPD_INFO("Invalid IRQ, cannot enable wakeup\n");
 	}
 
 	tcm_info->monitor_data = &ts->monitor_data;
